@@ -226,6 +226,9 @@ def recommend(body: MoodRequest):
     if not body.mood.strip():
         raise HTTPException(status_code=400, detail="mood cannot be empty")
 
+    if not CLAUDE_KEY or not TMDB_KEY or not OMDB_KEY:
+        raise HTTPException(status_code=500, detail="Server Error: API keys are not configured in Vercel Environment Variables.")
+
     claude_titles = get_movies_from_claude(body.mood, body.content_type)
     genre_map     = fetch_tmdb_genres()
 
