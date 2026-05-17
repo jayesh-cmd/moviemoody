@@ -281,11 +281,6 @@ struct CardView: View {
             LinearGradient(colors: [.clear, .black.opacity(0.55)],
                            startPoint: .top, endPoint: .bottom)
 
-            Text(movie.name.replacingOccurrences(of: " ", with: "\n"))
-                .font(.system(size: pos == 0 ? 44 : 36, weight: .black))
-                .textCase(.uppercase).multilineTextAlignment(.center)
-                .foregroundColor(.white.opacity(0.06)).tracking(-2)
-                .allowsHitTesting(false)
         }
         .frame(width: cw, height: ch)
         .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
@@ -296,8 +291,15 @@ struct CardView: View {
     }
 
     var fallback: some View {
-        LinearGradient(colors: [Color(hex: "#1a1208"), Color(hex: "#0a0a0a")],
-                       startPoint: .topLeading, endPoint: .bottomTrailing)
+        ZStack {
+            LinearGradient(colors: [Color(hex: "#1a1208"), Color(hex: "#0a0a0a")],
+                           startPoint: .topLeading, endPoint: .bottomTrailing)
+            Text(movie.name.replacingOccurrences(of: " ", with: "\n"))
+                .font(.system(size: pos == 0 ? 44 : 36, weight: .black))
+                .textCase(.uppercase).multilineTextAlignment(.center)
+                .foregroundColor(.white.opacity(0.06)).tracking(-2)
+                .allowsHitTesting(false)
+        }
     }
 }
 
