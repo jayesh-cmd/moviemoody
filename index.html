@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Vercel Web Analytics: Enable this from your Vercel Project Dashboard -> Analytics -> Enable Web Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Film Oracle</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+.wrap{display:flex;justify-content:center;align-items:center;background:#0a0a0a;padding:28px 0;min-height:100vh;}
+.phone{width:390px;height:844px;border-radius:54px;border:2px solid #222;overflow:hidden;position:relative;background:#0d0d0d;box-shadow:0 0 0 6px #111,0 40px 100px rgba(0,0,0,0.9);font-family:'DM Sans',sans-serif;}
+.bg{position:absolute;inset:0;background:radial-gradient(ellipse 300px 260px at 20% 95%,rgba(210,25,25,0.75) 0%,transparent 65%),radial-gradient(ellipse 220px 200px at 78% 100%,rgba(170,15,140,0.7) 0%,transparent 60%),radial-gradient(ellipse 180px 150px at 55% 88%,rgba(230,55,0,0.4) 0%,transparent 55%),#0d0d0d;z-index:0;}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:126px;height:28px;background:#0d0d0d;border-radius:0 0 18px 18px;z-index:100;}
+.screen{position:relative;z-index:10;height:100%;display:flex;flex-direction:column;padding:46px 0 32px;transition:all 0.5s ease;}
+
+.tabs{display:flex;gap:10px;padding:0 22px;margin-bottom:20px;flex-shrink:0;opacity:0;pointer-events:none;transition:opacity 0.5s;}
+.tab{padding:8px 22px;border-radius:22px;font-size:13px;font-weight:500;backdrop-filter:blur(14px);cursor:pointer;letter-spacing:0.3px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);transition:all 0.3s;}
+.tab.on{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.28);color:#fff;}
+
+.hero{position:absolute;top:50%;left:0;width:100%;transform:translateY(-100%);display:flex;flex-direction:column;align-items:center;text-align:center;transition:all 0.5s ease;z-index:5;}
+.hero-icon{font-size:52px;margin-bottom:10px;}
+.hero-title{font-size:30px;font-weight:700;color:white;margin-bottom:5px;}
+.hero-sub{font-size:14px;font-weight:300;color:rgba(255,255,255,0.35);line-height:1.4;}
+
+/* MIDDLE SECTION */
+.middle{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity 0.5s;}
+
+/* CAROUSEL */
+.carousel-wrap{position:relative;display:flex;align-items:center;overflow:hidden;height:300px;width:100%;flex-shrink:0;}
+.carousel{display:flex;align-items:center;width:100%;position:relative;height:100%;}
+
+.card{position:absolute;border-radius:26px;overflow:hidden;border:1px solid rgba(255,255,255,0.13);backdrop-filter:blur(18px);transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);cursor:pointer;user-select:none;background:rgba(20,20,28,0.75);}
+.card img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.card-poster-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#1a0e20 0%,#2a1a38 50%,#150c24 100%);}
+.ghost-txt{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;text-transform:uppercase;line-height:0.9;text-align:center;color:rgba(255,255,255,0.05);letter-spacing:-2px;pointer-events:none;position:relative;z-index:2;}
+
+.card[data-pos="0"]{width:220px;height:280px;left:50%;transform:translateX(-50%) rotate(0deg);z-index:10;opacity:1;}
+.card[data-pos="0"] .ghost-txt{font-size:44px;}
+.card[data-pos="-1"]{width:165px;height:225px;left:50%;transform:translateX(-205px) rotate(-6deg);z-index:5;opacity:0.55;}
+.card[data-pos="1"]{width:165px;height:225px;left:50%;transform:translateX(40px) rotate(6deg);z-index:5;opacity:0.55;}
+.card[data-pos="-2"]{width:130px;height:185px;left:50%;transform:translateX(-280px) rotate(-10deg);z-index:2;opacity:0.2;}
+.card[data-pos="2"]{width:130px;height:185px;left:50%;transform:translateX(150px) rotate(10deg);z-index:2;opacity:0.2;}
+.card[data-pos="3"],.card[data-pos="-3"],.card.hidden-card{opacity:0;pointer-events:none;left:50%;width:130px;height:185px;}
+.card[data-pos="3"]{transform:translateX(200px);}
+.card[data-pos="-3"]{transform:translateX(-350px);}
+
+.tap-left,.tap-right{position:absolute;top:0;bottom:0;width:90px;z-index:20;cursor:pointer;}
+.tap-left{left:0;} .tap-right{right:0;}
+
+/* INFO BELOW CARD */
+.card-info-below{text-align:center;padding:16px 22px 0;flex-shrink:0;}
+.info-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:4px;}
+.info-cat{font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:7px;}
+.info-imdb{display:flex;align-items:center;justify-content:center;gap:6px;}
+.imdb-b{background:#f5c518;color:#000;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;}
+.imdb-s{font-size:13px;font-weight:500;color:rgba(255,255,255,0.75);}
+.info-why{font-size:12px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.3;}
+
+/* DOTS */
+.dots{display:flex;justify-content:center;gap:6px;padding:14px 0 0;flex-shrink:0;}
+.d{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.18);transition:all 0.3s;}
+.d.on{width:18px;border-radius:3px;background:rgba(255,255,255,0.85);}
+
+/* MOOD BOX */
+.mood{flex-shrink:0;margin:auto 18px 0;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);transition:all 0.5s ease;transform:translateY(-150px);}
+.mood-in{background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);padding:13px 16px;display:flex;align-items:center;gap:10px;}
+.mood-icon{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:rgba(200,40,40,0.2);border:1px solid rgba(220,60,60,0.3);display:flex;align-items:center;justify-content:center;}
+.mood-input{flex:1;background:transparent;border:none;outline:none;font-size:13px;font-family:'DM Sans',sans-serif;color:#fff;}
+.mood-input::placeholder{color:rgba(255,255,255,0.3);}
+.mood-btn{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#cc2200,#991166);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:4px;background:rgba(255,255,255,0.22);border-radius:3px;}
+
+/* STATE CLASSES */
+.state-results .hero{opacity:0;pointer-events:none;transform:translateY(-140%);}
+.state-results .tabs{opacity:1;pointer-events:auto;}
+.state-results .middle{opacity:1;pointer-events:auto;}
+.state-results .mood{transform:translateY(0);margin-top:0;}
+
+/* LOADING / ERROR */
+.loading-box{display:none;flex-direction:column;align-items:center;gap:20px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.skeleton-card{width:220px;height:280px;border-radius:26px;background:rgba(255,255,255,0.05);animation:pulse 1s infinite alternate;}
+@keyframes pulse{from{opacity:0.3;}to{opacity:0.7;}}
+.error-box{display:none;flex-direction:column;align-items:center;gap:10px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,0.5);text-align:center;font-size:13px;padding:0 40px;}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 500px) {
+  .wrap { padding: 0; min-height: 100dvh; }
+  .phone { width: 100vw; height: 100dvh; border-radius: 0; border: none; box-shadow: none; }
+  .notch, .homebar { display: none; }
+  .screen { padding: 20px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+ <div class="phone">
+  <div class="bg"></div>
+  <div class="notch"></div>
+  <div class="screen" id="appScreen">
+   
+   <div class="hero" id="hero">
+    <div class="hero-icon">🎬</div>
+    <div class="hero-title">Film Oracle</div>
+    <div class="hero-sub">Tell us your mood.<br>We'll find your film.</div>
+   </div>
+
+   <div class="tabs">
+    <div class="tab on" onclick="setTab('Movies', this)">Movies</div>
+    <div class="tab" onclick="setTab('Shows', this)">Shows</div>
+   </div>
+
+   <div class="middle">
+    <!-- CAROUSEL -->
+    <div class="carousel-wrap" id="carouselView">
+     <div class="carousel" id="carousel"></div>
+     <div class="tap-left" id="tapL"></div>
+     <div class="tap-right" id="tapR"></div>
+    </div>
+
+    <!-- INFO BELOW -->
+    <div class="card-info-below" id="infoView">
+     <div class="info-name" id="infoName"></div>
+     <div class="info-cat" id="infoCat"></div>
+     <div class="info-imdb">
+      <span class="imdb-b">IMDb</span>
+      <span class="imdb-s" id="infoImdb"></span>
+     </div>
+     <div class="info-why" id="infoWhy"></div>
+    </div>
+
+    <!-- DOTS -->
+    <div class="dots" id="dots"></div>
+   </div>
+   
+   <!-- LOADING & ERROR OVERLAYS -->
+   <div class="loading-box" id="loadingBox">
+    <div class="skeleton-card"></div>
+   </div>
+   <div class="error-box" id="errorBox">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div id="errorTxt"></div>
+   </div>
+
+   <!-- MOOD BOX -->
+   <div class="mood">
+    <div class="mood-in">
+     <div class="mood-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,110,80,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+     </div>
+     <input type="text" id="moodInput" class="mood-input" placeholder="What's in your mood?…" onkeypress="if(event.key === 'Enter') submitSearch()" />
+     <div class="mood-btn" onclick="submitSearch()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+     </div>
+    </div>
+   </div>
+
+  </div>
+  <div class="homebar"></div>
+ </div>
+</div>
+
+<script>
+let data = [];
+let center = 0;
+let currentTab = 'movie'; // "movie" or "show"
+let hasSearched = false;
+
+const screenEl = document.getElementById('appScreen');
+const carousel = document.getElementById('carousel');
+const dotsContainer = document.getElementById('dots');
+const inputEl = document.getElementById('moodInput');
+const loadingBox = document.getElementById('loadingBox');
+const errorBox = document.getElementById('errorBox');
+const carouselView = document.getElementById('carouselView');
+const infoView = document.getElementById('infoView');
+
+function setTab(label, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  currentTab = label === 'Movies' ? 'movie' : 'show';
+  submitSearch();
+}
+
+async function submitSearch() {
+  const text = inputEl.value.trim();
+  if(!text) return;
+  
+  if(!hasSearched) {
+    hasSearched = true;
+    screenEl.classList.add('state-results');
+  }
+
+  // Show loading
+  carouselView.style.display = 'none';
+  infoView.style.display = 'none';
+  dotsContainer.style.display = 'none';
+  errorBox.style.display = 'none';
+  loadingBox.style.display = 'flex';
+
+  try {
+    const API_URL = window.location.hostname === 'localhost' || window.location.protocol === 'file:' 
+                    ? 'http://172.20.10.3:8000/api/recommend' 
+                    : '/api/recommend';
+
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mood: text, content_type: currentTab })
+    });
+    
+    if(!res.ok) throw new Error(await res.text());
+    
+    const json = await res.json();
+    data = json.map(m => ({
+      name: m.title,
+      cat: m.genres.slice(0,2).join(' · '),
+      imdb: m.imdb_rating || '—',
+      poster: m.poster,
+      why: m.why
+    }));
+    
+    center = 0;
+    buildCarousel();
+    
+    loadingBox.style.display = 'none';
+    carouselView.style.display = 'flex';
+    infoView.style.display = 'block';
+    dotsContainer.style.display = 'flex';
+  } catch (err) {
+    loadingBox.style.display = 'none';
+    errorBox.style.display = 'flex';
+    document.getElementById('errorTxt').textContent = err.message;
+  }
+}
+
+function buildCarousel() {
+  carousel.innerHTML = '';
+  dotsContainer.innerHTML = '';
+  data.forEach((d, i) => {
+    // Card
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.dataset.idx = i;
+    
+    const bg = document.createElement('div');
+    bg.className = 'card-poster-bg';
+    if(d.poster) {
+      const img = document.createElement('img');
+      img.src = d.poster;
+      c.appendChild(img);
+    } else {
+      const g = document.createElement('div');
+      g.className = 'ghost-txt';
+      g.innerHTML = d.name.replace(/ /g, '<br>');
+      bg.appendChild(g);
+      c.appendChild(bg);
+    }
+    carousel.appendChild(c);
+
+    // Dot
+    const dot = document.createElement('div');
+    dot.className = 'd';
+    dotsContainer.appendChild(dot);
+  });
+  render();
+}
+
+function render(){
+  if(!data.length) return;
+  const n = data.length;
+  document.querySelectorAll('.card').forEach(card => {
+    const idx = parseInt(card.dataset.idx);
+    let diff = idx - center;
+    if(diff > n/2) diff -= n;
+    if(diff < -n/2) diff += n;
+    
+    if(Math.abs(diff) <= 2) {
+      card.dataset.pos = diff;
+      card.classList.remove('hidden-card');
+    } else {
+      card.dataset.pos = diff > 0 ? 3 : -3;
+      card.classList.add('hidden-card');
+    }
+  });
+  
+  document.querySelectorAll('.d').forEach((d,i) => d.classList.toggle('on', i === center));
+  
+  const d = data[center];
+  document.getElementById('infoName').textContent = d.name;
+  document.getElementById('infoCat').textContent = d.cat;
+  document.getElementById('infoImdb').textContent = d.imdb;
+  document.getElementById('infoWhy').textContent = d.why || '';
+}
+
+document.getElementById('tapR').addEventListener('click', () => { if(data.length) { center = (center+1)%data.length; render(); }});
+document.getElementById('tapL').addEventListener('click', () => { if(data.length) { center = (center-1+data.length)%data.length; render(); }});
+
+let startX=0;
+carousel.addEventListener('touchstart',e => { startX=e.touches[0].clientX; }, {passive:true});
+carousel.addEventListener('touchend',e => {
+  if(!data.length) return;
+  const dx = e.changedTouches[0].clientX - startX;
+  if(dx < -40) { center=(center+1)%data.length; render(); }
+  else if(dx > 40) { center=(center-1+data.length)%data.length; render(); }
+});
+</script>
+
+</body>
+</html>

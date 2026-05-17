@@ -49,7 +49,7 @@ class OracleVM: ObservableObject {
         errorMsg = nil
         movies   = []
         do {
-            let url     = URL(string: "\(SERVER_URL)/recommend")!
+            let url     = URL(string: "\(SERVER_URL)/api/recommend")!
             var req     = URLRequest(url: url)
             req.httpMethod = "POST"
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")

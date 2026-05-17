@@ -204,12 +204,12 @@ def build_movie(claude_item: dict, genre_map: dict) -> dict | None:
 
 # ── endpoints ──
 
-@app.get("/")
+@app.get("/api")
 def root():
     return {"status": "ok", "message": "Film Oracle API is running"}
 
 
-@app.post("/recommend", response_model=list[Movie])
+@app.post("/api/recommend", response_model=list[Movie])
 def recommend(body: MoodRequest):
     """
     Takes a mood string, returns 6 enriched movie recommendations.
