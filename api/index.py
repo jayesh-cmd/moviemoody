@@ -3,6 +3,7 @@ import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 from dotenv import load_dotenv
 import os
 
@@ -42,12 +43,12 @@ class MoodRequest(BaseModel):
 
 class Movie(BaseModel):
     title:       str
-    year:        str | None
-    poster:      str | None   # from TMDB
-    genres:      list[str]    # from TMDB
-    overview:    str | None   # from TMDB
-    imdb_rating: str | None   # from OMDb
-    why:         str | None   # from Claude
+    year:        Optional[str]
+    poster:      Optional[str]   # from TMDB
+    genres:      list[str]       # from TMDB
+    overview:    Optional[str]   # from TMDB
+    imdb_rating: Optional[str]   # from OMDb
+    why:         Optional[str]   # from Claude
 
 
 # ── helpers ──
@@ -108,7 +109,7 @@ def get_movies_from_claude(mood: str, content_type: str = "movie") -> list[dict]
         raise HTTPException(status_code=502, detail="Claude returned invalid JSON")
 
 
-def fetch_tmdb(title: str, year: str | None) -> dict | None:
+def fetch_tmdb(title: str, year: Optional[str]) -> Optional[dict]:
     """Search TMDB by title — returns poster, genres, overview, exact title."""
     params = {
         "api_key": TMDB_KEY,
@@ -159,7 +160,7 @@ def fetch_tmdb_genres() -> dict:
     return {g["id"]: g["name"] for g in genres}
 
 
-def fetch_omdb_rating(title: str) -> str | None:
+def fetch_omdb_rating(title: str) -> Optional[str]:
     """Fetch only the IMDB rating from OMDb by title."""
     try:
         response = _session.get(
@@ -177,7 +178,7 @@ def fetch_omdb_rating(title: str) -> str | None:
     return rating if rating and rating != "N/A" else None
 
 
-def build_movie(claude_item: dict, genre_map: dict) -> dict | None:
+def build_movie(claude_item: dict, genre_map: dict) -> Optional[dict]:
     """Combine Claude + TMDB + OMDb data into one movie object."""
     title = claude_item.get("title", "")
     year  = claude_item.get("year")
